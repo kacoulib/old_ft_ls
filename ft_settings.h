@@ -40,6 +40,8 @@ int					ft_set_user_name(t_file *file, int l_len[])
 int					ft_set_time(t_file *file, int l_len[])
 {
 	char			**r;
+	char			**tmp;
+	time_t			curtime;
 
 	if (!(*r = ctime(&file->sb->st_mtime)))
 		return (0);
@@ -47,16 +49,22 @@ int					ft_set_time(t_file *file, int l_len[])
 	file->l[5] = r[1];
 	file->l[5] = ft_strjoin(file->l[5], " ");
 	file->l[5] = ft_strjoin(file->l[5],
-		ft_padding_left(r[2], (ft_strlen(r[2]) > 1 ? 0 : 1)));
-	r = ft_strsplit(r[3], ':');
+		ft_padding(r[2], (ft_strlen(r[2]) > 1 ? 0 : 1), 'r'));
 	file->l[5] = ft_strjoin(file->l[5], " ");
-	file->l[5] = ft_strjoin(file->l[5], r[0]);
-	file->l[5] = ft_strjoin(file->l[5], ":");
-	file->l[5] = ft_strjoin(file->l[5], r[1]);
+	tmp = r;
+	if ((time(&curtime) - 15552000) > file->sb->st_mtime)
+		file->l[5] = ft_strjoin(file->l[5], ft_padding(tmp[4], 1, 'r'));
+	else
+	{
+		r = ft_strsplit(r[3], ':');
+		file->l[5] = ft_strjoin(file->l[5], r[0]);
+		file->l[5] = ft_strjoin(file->l[5], ":");
+		file->l[5] = ft_strjoin(file->l[5], r[1]);
+	}
 	return (1);
 }
 
-int					ft_set_getxattr(t_file *file)
+int					ft_set_acl(t_file *file)
 {
 	char			r[1000];
 	// printf("%d\n", getxattr(file->path, file->name, r, 1000));
@@ -67,6 +75,7 @@ int					ft_set_permissions(t_file *file, int l_len[])
 {
 	struct stat 	*sb;
 
+	char *r;
 	sb = file->sb;
 	if ((file->type == 8 && (file->l[0] = ft_strdup("-"))) ||
 		(file->type == 4 && (file->l[0] = ft_strdup("d"))) ||
@@ -80,12 +89,33 @@ int					ft_set_permissions(t_file *file, int l_len[])
 	file->l[0] = ft_strjoin(file->l[0], (sb->st_mode & S_IXGRP) ? "x" : "-");
 	file->l[0] = ft_strjoin(file->l[0], (sb->st_mode & S_IROTH) ? "r" : "-");
 	file->l[0] = ft_strjoin(file->l[0], (sb->st_mode & S_IWOTH) ? "w" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (sb->st_mode & S_IXOTH) ? "x" : "-");
-	// file->l[0] = ft_strjoin(file->l[0], (sb->st_mode & S_IXOTH) ? "x" : "");
-	// printf("%s %d %s\n",file->l[0], file->sb->st_mode, file->name);
+	ft_set_permissions_last_part(file);
 	if (ft_strlen(file->l[0]) > l_len[0])
 		l_len[0] = ft_strlen(file->l[0]);
 	return (ft_set_user_name(file, l_len));
+}
+
+int					ft_set_permissions_last_part(t_file *file)
+{
+	struct stat 	*sb;
+	ssize_t			i;
+	char			*r;
+
+	sb = file->sb;
+	r = ft_memalloc(101);
+	if (sb->st_mode & S_ISVTX)
+	{
+		file->l[0] = ft_strjoin(file->l[0], "t");
+		file->type = 12;
+	}
+	else
+		file->l[0] = ft_strjoin(file->l[0], sb->st_mode & S_IXOTH ? "x" : "-");
+	if ((i = listxattr(file->path, r, 100, 1)))
+		file->l[0] = ft_strjoin(file->l[0], "@");
+	else
+		file->l[0] = ft_strjoin(file->l[0], " ");
+	file->type = file->type == 8 && sb->st_mode & S_IXUSR ? 0 : file->type;
+	return (1);
 }
 
 int					ft_set_file(t_file *file, char *path, char *name, int type)
@@ -106,9 +136,12 @@ int					ft_set_file(t_file *file, char *path, char *name, int type)
 		if (file->type == 10)
 		{
 			readlink(path, tmp, 256);
-			file->name = ft_strjoin(file->name, " -> ");
+			file->name = ft_strjoin(file->name, " ");
 			file->name = ft_strjoin(file->name, tmp);
 		}
+		if (file->parent)
+			(*file->parent)->size += sb->st_blocks;
+			// printf("%s %p %lld\n", file->name, file->parent, sb->st_blocks);
 	}
 	file->next = NULL;
 	return (1);
