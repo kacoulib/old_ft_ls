@@ -1,0 +1,22 @@
+total 168
+drwxr-xr-x   21 kacoulib  2015_paris    714 Feb  8 03:04 .
+drwxr-xr-x   21 kacoulib  2015_paris    714 Jan 18 16:14 ..
+-rw-r--r--@   1 kacoulib  2015_paris   6148 Jan 19 08:44 .DS_Store
+drwxr-xr-x   13 kacoulib  2015_paris    442 Feb  8 03:08 .git
+-rw-r--r--    1 kacoulib  2015_paris   1241 Jan 18 17:39 Makefile
+-rwxr-xr-x    1 kacoulib  2015_paris  23460 Feb  8 03:03 a.out
+-rw-r--r--    1 kacoulib  2015_paris      9 Jan 18 16:34 auteur
+lrwxr-xr-x    1 kacoulib  2015_paris      5 Feb  3 01:50 copy_a.aout -> a.out
+-rw-r--r--    1 kacoulib  2015_paris      0 Feb  8 03:08 diff1
+-rw-r--r--    1 kacoulib  2015_paris   2109 Feb  3 13:39 ft_displays.h
+-rw-r--r--    1 kacoulib  2015_paris   4422 Feb  3 13:41 ft_ls.c
+-rw-r--r--    1 kacoulib  2015_paris   2787 Feb  3 13:23 ft_ls.h
+-rw-r--r--    1 kacoulib  2015_paris   5464 Feb  3 12:12 ft_settings.h
+-rw-r--r--    1 kacoulib  2015_paris   2315 Feb  3 13:39 ft_sorts.h
+drwxr-xr-x  136 kacoulib  2015_paris   4624 Jan 19 05:45 libft
+lrwxr-xr-x    1 kacoulib  2015_paris      7 Jan 20 12:00 link -> ft_ls.h
+-rw-r--r--    1 kacoulib  2015_paris      7 Feb  3 01:26 ls
+-rw-r--r-T    1 kacoulib  2015_paris      7 Feb  3 01:26 p
+-rw-r--r--    1 kacoulib  2015_paris      0 Feb  3 05:55 sb-
+-rw-r--r--    1 kacoulib  2015_paris      0 Feb  3 05:55 st_mtime
+drwxr-xr-x    5 kacoulib  2015_paris    170 Jan 20 11:48 test

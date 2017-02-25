@@ -12,14 +12,14 @@
 
 NAME =  ft_ls 
 HEADERS	= ft_ls.h
-SOURCES = ft_ls.c
+SOURCES = ft_ls.c ft_settings.c ft_settings_2.c ft_displays.c ft_displays_2.c ft_sorts.c
 OBJ	= $(SOURCES:.c=.o)
 FLAGS	= -Wall -Werror -Wextra
 
 all: 
 	gcc $(FLAGS) -c $(HEADERS) $(SOURCES)  
 	ar rc $(NAME) $(OBJ)
-	ranlib $(NAME)
+	ranlib $(NAME) && chmod 755 $(NAME)
 	cd libft && make
 clean : 
 	rm -rf $(OBJ) 
