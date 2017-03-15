@@ -13,7 +13,7 @@
 #ifndef FT_LS
 # define FT_LS
 
-# include "libft/libft.h"
+# include "lib/libft/libft.h"
 # include <dirent.h>
 # include <sys/types.h>
 # include <sys/stat.h>
@@ -36,51 +36,52 @@ typedef struct		s_file
 	int				type;
 	struct stat		*sb;
 	struct s_file	*files;
-	struct s_file	*folders;
-	struct s_file	*next_folder;
 	struct s_file	*parent;
+	struct s_file	*errors;
 	struct s_file	*next;
 	struct s_file	*prev;
 }					t_file;
 
 char *g_flags = "aflRrtu";
 
-int					ft_display_error(char *s, char *type);
-int					ft_display_extra_l_first_part(t_file *folder, t_file *file, int l_len[]);
-int					ft_display_extra_l_second_part(t_file *file, int l_len[], int i);
-int					ft_display_extra_l_third_part(t_file *file, int l_len[], int i);
-int					ft_display_result(t_file **folder, t_file *file, int l_len[]);
 int					ft_display_color(t_file *file);
 int					ft_display_color_extra(t_file *file);
+int					ft_display_result(t_file **folder, t_file *file, int l_len[], int is_multiple_folder);
+int					ft_display_result_second_part(t_file *file, int l_len[], int is_multiple_folder);
+int					ft_display_result_third_part(t_file *file, int l_len[], int i);
+int					ft_display_result_fourth_part(t_file *file, int l_len[], int i);
 t_file				*ft_init_folder(char *name, t_file *parent, t_file *prev);
+int					ft_is_file(char *path);
 char				*ft_padding(char *s, int offset, char direction);
 int					ft_parse_dir(t_file *file, int l_len[]);
 int					ft_parse_dir_last_part(t_file *file, struct dirent *tmp, int l_len[]);
-int					ft_push_folder(t_file *file, t_file *new_file);
+int					ft_push_file(t_file *parent, t_file *file);
 int					ft_rev_file(t_file *file);
 int					ft_set_acl(t_file *line);
+int					ft_set_error(t_file *file, char *s, char *type);
 int					ft_set_extra_info(t_file *file, int l_len[]);
 int					ft_set_params(char **av);
 int					ft_set_permissions(t_file *file, int l_len[]);
 int					ft_set_permissions_last_part(t_file *file);
 int					ft_set_time(t_file *file);
 int					ft_set_user_name(t_file *file, int l_len[]);
+int					ft_sort_settings(t_file **file);
 int					ft_sort_by_last_modify(t_file **file);
 int					ft_sort_lexico(t_file **file);
 int					ft_swap_file(t_file **file, t_file *current, t_file *tmp);
 
-# define ANSI_COLOR_BLACK	"\x1b[30m\x1b[42m"
-# define ANSI_COLOR_RED		"\x1b[31m"
-# define ANSI_COLOR_GREEN	"\x1b[32m"
-# define ANSI_COLOR_YELLOW	"\x1b[33m"
-# define ANSI_COLOR_BLUE	"\x1b[34m"
-# define ANSI_COLOR_MAGENTA	"\x1b[35m"
-# define ANSI_COLOR_CYAN	"\x1b[36m"
-# define ANSI_COLOR_RESET	"\x1b[0m"
+# define ANSI_COLOR_BLACK	"\x1B[30m\x1B[42m"
+# define ANSI_COLOR_RED		"\x1B[31m"
+# define ANSI_COLOR_GREEN	"\x1B[32m"
+# define ANSI_COLOR_YELLOW	"\x1B[33m"
+# define ANSI_COLOR_BLUE	"\x1B[34m"
+# define ANSI_COLOR_MAGENTA	"\x1B[35m"
+# define ANSI_COLOR_CYAN	"\x1B[36m"
+# define ANSI_COLOR_RESET	"\x1B[0m"
 
-# include "ft_settings.c"
-# include "ft_settings_2.c"
-# include "ft_displays.c"
-# include "ft_displays_2.c"
-# include "ft_sorts.c"
+# include "src/settings/ft_settings.c"
+# include "src/settings/ft_settings_2.c"
+# include "src/displays/ft_displays.c"
+# include "src/displays/ft_displays_2.c"
+# include "src/sortings/ft_sorts.c"
 #endif

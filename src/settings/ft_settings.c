@@ -10,13 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ls.h"
+#include "../../ft_ls.h"
 
-int					ft_set_extra_info(t_file *file, int l_len[])
+int					ft_set_extra_info(t_file *file, int long_params[])
 {
 	struct stat		*sb;
 	char			tmp[256];
-	// int				usr_and_grp[2];
 
 	sb = (struct stat *)malloc(sizeof(struct stat) + 1);
 	if (!sb || ((file->type == 8) ? stat(file->path, sb) :
@@ -32,7 +31,7 @@ int					ft_set_extra_info(t_file *file, int l_len[])
 	if (file->parent)
 		file->parent->size += sb->st_blocks;
 	file->next = NULL;
-	return (ft_set_permissions(file, l_len));
+	return (ft_set_permissions(file, long_params));
 }
 
 int					ft_set_params(char **av)
@@ -51,7 +50,7 @@ int					ft_set_params(char **av)
 		while (av[i][++j] != '\0')
 		{
 			if (ft_indexof(g_flags, av[i][j]) < 0)
-				return (ft_display_error(ft_strsub(av[i], j, 1), "wrong flag"));
+				return (ft_set_error(NULL, ft_strsub(av[i], j, 1), "wrong flag"));
 			if (ft_indexof(g_flags, av[i][j]) >= 0)
 				if (ft_indexof(r, av[i][j]) < 0)
 					r[++k] = av[i][j];
@@ -62,7 +61,7 @@ int					ft_set_params(char **av)
 	return (i);
 }
 
-int					ft_set_permissions(t_file *file, int l_len[])
+int					ft_set_permissions(t_file *file, int long_params[])
 {
 	struct stat		*sb;
 
@@ -80,9 +79,9 @@ int					ft_set_permissions(t_file *file, int l_len[])
 	file->l[0] = ft_strjoin(file->l[0], (sb->st_mode & S_IROTH) ? "r" : "-");
 	file->l[0] = ft_strjoin(file->l[0], (sb->st_mode & S_IWOTH) ? "w" : "-");
 	ft_set_permissions_last_part(file);
-	if ((int) ft_strlen(file->l[0]) > l_len[0])
-		l_len[0] = ft_strlen(file->l[0]);
-	return (ft_set_user_name(file, l_len));
+	if ((int) ft_strlen(file->l[0]) > long_params[0])
+		long_params[0] = ft_strlen(file->l[0]);
+	return (ft_set_user_name(file, long_params));
 }
 
 int					ft_set_permissions_last_part(t_file *file)
@@ -108,7 +107,7 @@ int					ft_set_permissions_last_part(t_file *file)
 	return (1);
 }
 
-int					ft_set_user_name(t_file *file, int l_len[])
+int					ft_set_user_name(t_file *file, int long_params[])
 {
 	struct passwd	*usr;
 	struct group	*grp;
@@ -116,19 +115,22 @@ int					ft_set_user_name(t_file *file, int l_len[])
 	usr = getpwuid(file->sb->st_uid);
 	grp = getgrgid(file->sb->st_gid);
 	if ((file->l[1] = ft_itoa(file->sb->st_nlink))
-		&& (int) ft_strlen(file->l[1]) > l_len[1])
-		l_len[1] = ft_strlen(file->l[1]);
-	if ((file->l[2] = usr->pw_name) && (int) ft_strlen(file->l[2]) > l_len[2])
-		l_len[2] = ft_strlen(file->l[2]);
-	if ((file->l[3] = grp->gr_name) && (int) ft_strlen(file->l[3]) > l_len[3])
-		l_len[3] = ft_strlen(file->l[3]);
+		&& (int) ft_strlen(file->l[1]) > long_params[1])
+		long_params[1] = ft_strlen(file->l[1]);
+	if ((file->l[2] = usr->pw_name) &&
+		(int) ft_strlen(file->l[2]) > long_params[2])
+		long_params[2] = ft_strlen(file->l[2]);
+	if ((file->l[3] = grp->gr_name) &&
+		(int) ft_strlen(file->l[3]) > long_params[3])
+		long_params[3] = ft_strlen(file->l[3]);
 	if ((file->l[4] = ft_itoa(file->sb->st_size))
-		&& (int) ft_strlen(file->l[4]) > l_len[4])
-		l_len[4] = ft_strlen(file->l[4]);
+		&& (int) ft_strlen(file->l[4]) > long_params[4])
+		long_params[4] = ft_strlen(file->l[4]);
 	if ((file->l[5] = ft_itoa(file->sb->st_mtime))
-		&& (int) ft_strlen(file->l[5]) > l_len[5])
-		l_len[5] = ft_strlen(file->l[5]);
-	if ((file->l[7] = file->name) && (int) ft_strlen(file->l[7]) > l_len[7])
-		l_len[7] = ft_strlen(file->l[7]);
+		&& (int) ft_strlen(file->l[5]) > long_params[5])
+		long_params[5] = ft_strlen(file->l[5]);
+	if ((file->l[7] = file->name) &&
+		(int) ft_strlen(file->l[7]) > long_params[7])
+		long_params[7] = ft_strlen(file->l[7]);
 	return (ft_set_time(file));
 }

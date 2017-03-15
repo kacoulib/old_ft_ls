@@ -10,15 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ls.h"
+#include "../../ft_ls.h"
 
-int			ft_display_extra_l_second_part(t_file *file,
-	int l_len[], int i)
+int			ft_display_result_third_part(t_file *file,
+	int long_params[], int i)
 {
 	while (++i < 6)
 	{
-		if ((int) ft_strlen(file->l[i]) < l_len[i])
-			ft_display_extra_l_third_part(file, l_len, i);
+		if ((int) ft_strlen(file->l[i]) < long_params[i])
+			ft_display_result_fourth_part(file, long_params, i);
 		else
 		{
 			ft_putstr(file->l[i]);
@@ -30,37 +30,56 @@ int			ft_display_extra_l_second_part(t_file *file,
 	return (0);
 }
 
-int			ft_display_extra_l_third_part(t_file *file,
-	int l_len[], int i)
+int			ft_display_result_fourth_part(t_file *file, int long_params[], int i)
 {
 	char	*tmp;
 
 	if (i == 2 || i == 3)
 	{
-		tmp = ft_padding(file->l[i], (l_len[i] -
+		tmp = ft_padding(file->l[i], (long_params[i] -
 			ft_strlen(file->l[i])) + 1, 'l');
 		ft_putstr(tmp);
 		ft_putchar(' ');
+		return (1);
 	}
-	else
-	{
-		tmp = ft_padding(file->l[i], l_len[i] - ft_strlen(file->l[i]), 'r');
-		ft_putstr(tmp);
-		ft_putchar(' ');
-	}
+	tmp = ft_padding(file->l[i], long_params[i] - ft_strlen(file->l[i]), 'r');
+	ft_putstr(tmp);
+	ft_putchar(' ');
 	return (1);
 }
 
-int			ft_push_folder(t_file *file, t_file *new_file)
-{
-	t_file	*tmp;
 
-	if (!file && (file = new_file))
-		return (1);
-	tmp = file;
-	while (tmp->next_folder)
-		tmp = tmp->next_folder;
-	tmp->next_folder = new_file;
-	new_file->next_folder = NULL;
-	return (1);	
+int			ft_display_color(t_file *file)
+{
+	if (file->type == 12 && file->l[0][10] == ' ')
+		ft_putstr(ANSI_COLOR_BLACK);
+	else if (file->type == 0)
+		ft_putstr(ANSI_COLOR_RED);
+	else if (file->type == 4)
+		ft_putstr(ANSI_COLOR_CYAN);
+	else if (file->type == 10)
+	{
+		ft_putstr(ANSI_COLOR_MAGENTA);
+		if (ft_indexof(g_flags, 'l') > -1 && ft_display_color_extra(file))
+			return (1);
+	}
+	ft_putstr(file->name);
+	ft_putstr(ANSI_COLOR_RESET);
+	return (1);
 }
+
+int			ft_display_color_extra(t_file *file)
+{
+	char	**r;
+	if (ft_indexof(g_flags, 'l') > -1)
+	{
+		r = ft_strsplit(file->name, ' ');
+		ft_putstr(r[0]);
+		ft_putstr(ANSI_COLOR_RESET);
+		ft_putstr(" -> ");
+		ft_putstr(r[1]);
+	}
+	ft_putstr(ANSI_COLOR_RESET);
+	return (1);
+}
+

@@ -10,29 +10,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ls.h"
+#include "../../ft_ls.h"
 
 int			ft_sort_lexico(t_file **file)
 {
 	t_file	*current;
-	t_file	*tmp;
+	t_file	*head;
 
 	current = (*file);
-	tmp = (*file);
-
+	head = (*file);
 	while (current->next)
 	{
 		if (ft_strcmp(current->name, current->next->name) > 0)
 		{
 			current = current->next;
-			while (tmp->next)
+			while (head->next)
 			{
-				if (ft_strcmp(current->name, tmp->name) < 0)
-				{
-					return (ft_swap_file(file, current, tmp) &&
-					ft_sort_lexico(file));
-				}
-				tmp = tmp->next;
+				if ((ft_strcmp(current->name, head->name) < 0) &&
+					(ft_swap_file(file, current, head)))
+					return (ft_sort_lexico(file));
+				head = head->next;
 			}
 		}
 		current = current->next;
@@ -40,17 +37,20 @@ int			ft_sort_lexico(t_file **file)
 	return (1);
 }
 
-int			ft_swap_file(t_file **file, t_file *current, t_file *tmp)
+int			ft_swap_file(t_file **file, t_file *current, t_file *head)
 {
-	current->prev->next = current->next;
-	current->next = current->prev;
-	if (tmp->prev)
-		tmp->prev->next = current;
-	current->prev = tmp->prev;
-	current->next = tmp;
-	if (tmp == (*file))
+	if (current->prev)
+		current->prev->next = current->next;
+	if (current->next)
+		current->next->prev = current->prev;
+	if (head->prev)
+		head->prev->next = current;
+	current->prev = head->prev;
+	head->prev = current;
+	current->next = head;
+	if (head == (*file))
 		(*file) = current;
-	return (0);
+	return (1);
 }
 
 int			ft_sort_by_last_modify(t_file **file)
@@ -77,6 +77,15 @@ int			ft_sort_by_last_modify(t_file **file)
 	return (1);
 }
 
+int			ft_rev_list(t_file **file)
+{
+	while ((*file)->prev)
+	{
+		(*file) = (*file)->prev;
+	}
+	return (1);
+}
+
 int			ft_rev_file(t_file *file)
 {
 	t_file	*prev;
@@ -92,4 +101,30 @@ int			ft_rev_file(t_file *file)
 	}
 	file = tmp;
 	return (0);
+}
+
+int			ft_sort_settings(t_file **folder)
+{
+	t_file	*tmp;
+
+	if (!folder || !(tmp = *folder))
+		return (0);
+
+	if (ft_indexof(g_flags, 'f') < 0)
+	{
+		if (ft_indexof(g_flags, 'u') >= 0)
+			ft_sort_by_last_modify(folder);
+		else
+			ft_sort_lexico(folder);
+	}
+	if (ft_indexof(g_flags, 'R') >= 0)
+	{
+		while (tmp)
+		{
+			if (tmp->type == 4)
+				ft_sort_settings(&tmp->files);
+			tmp = tmp->next;
+		}
+	}
+	return (1);
 }
