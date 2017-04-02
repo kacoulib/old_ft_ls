@@ -12,17 +12,10 @@
 
 #include "../../ft_ls.h"
 
-// int			ft_set_acl(t_file *file)
-// {
-// 	char	r[1000];
-
-// 	return (1);
-// }
-
-t_file				*ft_init_folder(char *name, t_file *parent, t_file *prev)
+t_file			*ft_init_folder(char *name, t_file *parent, t_file *prev)
 {
-	t_file			*file;
-	struct stat		*sb;
+	t_file		*file;
+	struct stat	*sb;
 
 	file = (t_file *)malloc(sizeof(t_file) + 1);
 	sb = (struct stat*)malloc(sizeof(struct stat) + 1);
@@ -42,10 +35,10 @@ t_file				*ft_init_folder(char *name, t_file *parent, t_file *prev)
 	return (file);
 }
 
-char		*ft_padding(char *s, int offset, char direction)
+char			*ft_padding(char *s, int offset, char direction)
 {
-	char			*tmp;
-	int				i;
+	char		*tmp;
+	int			i;
 
 	if (offset <= 0)
 		return (ft_strtrim(s));
@@ -62,9 +55,9 @@ char		*ft_padding(char *s, int offset, char direction)
 	return (tmp);
 }
 
-int			ft_push_file(t_file *head, t_file *file)
+int				ft_push_file(t_file *head, t_file *file)
 {
-	t_file	*tmp;
+	t_file		*tmp;
 
 	tmp = head;
 	while (tmp->next)
@@ -73,37 +66,40 @@ int			ft_push_file(t_file *head, t_file *file)
 	file->prev = tmp;
 	return (0);
 }
-	
-int			ft_set_error(t_file *file, char *s, char *err)
+
+int				ft_set_error(t_file *file, char *s, char *err)
 {
-	t_file	*tmp;
+	t_file		*tmp;
 
 	if (!(tmp = file))
 		return (0);
 	file->name = ft_strdup("ft_ls: ");
-	if (ft_strcmp(err, "wrong flag") != 0)
+	if (ft_strcmp(err, "open") == 0)
 		file->name = ft_strjoin(file->name, s);
-	else
+	if (ft_strcmp(err, "wrong flag") == 0)
 	{
-		file->name = ft_strjoin(file->name, "illegal option -- \n");
-		file->name = ft_strjoin(file->name, "usage: ./ft_ls [");
+		file->name = ft_strjoin(file->name, "illegal option -- ");
+		file->name = ft_strjoin(file->name, s);
+		file->name = ft_strjoin(file->name, "\nusage: ft_ls [");
 		file->name = ft_strjoin(file->name, g_flags);
 		file->name = ft_strjoin(file->name, "] [file ...]");
 	}
+	else
+		file->name = ft_strjoin(file->name, sys_errlist[errno]);
 	while (tmp->parent)
 		tmp = tmp->parent;
 	if (!tmp->errors)
 		tmp->errors = file;
 	else
 		ft_push_file(tmp->errors, file);
-	return (0);
+	return ((file->type = -1));
 }
 
-int			ft_set_time(t_file *file)
+int				ft_set_time(t_file *file)
 {
-	char	**r;
-	char	**tmp;
-	time_t	curtime;
+	char		**r;
+	char		**tmp;
+	time_t		curtime;
 
 	if (!(r = (char **)malloc(sizeof(char *) * 100)) ||
 	!(*r = ctime(&file->sb->st_mtime)))

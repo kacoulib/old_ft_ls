@@ -12,6 +12,50 @@
 
 #include "../../ft_ls.h"
 
+int			ft_rev_file(t_file **file)
+{
+	t_file	*prev;
+	t_file	*tmp;
+
+	prev = NULL;
+	while (*file)
+	{
+		tmp = (*file);
+		*file = (*file)->next;
+		tmp->next = prev;
+		prev = tmp;
+	}
+	*file = tmp;
+	return (0);
+}
+
+int			ft_sort_by_last_modify(t_file **file)
+{
+	t_file	*current;
+	t_file	*tmp;
+
+	current = (*file);
+	tmp = (*file);
+	while (current->next)
+	{
+		if (current->sb->st_atime > current->next->sb->st_atime)
+		{
+			current = current->next;
+			while (tmp->next)
+			{
+				if (current->sb->st_atime < tmp->sb->st_atime)
+				{
+					ft_swap_file(file, current, tmp);
+					return (ft_sort_lexico(file));
+				}
+				tmp = tmp->next;
+			}
+		}
+		current = current->next;
+	}
+	return (1);
+}
+
 int			ft_sort_lexico(t_file **file)
 {
 	t_file	*current;
@@ -37,6 +81,31 @@ int			ft_sort_lexico(t_file **file)
 	return (1);
 }
 
+int			ft_sort_settings(t_file **folder)
+{
+	t_file	*tmp;
+
+	if (!folder || !(*folder))
+		return (0);
+	if (ft_indexof(g_flags, 'f') < 0)
+	{
+		if (ft_indexof(g_flags, 'u') >= 0)
+			ft_sort_by_last_modify(folder);
+		else
+			ft_sort_lexico(folder);
+	}
+	if (ft_indexof(g_flags, 'r') >= 0)
+		ft_rev_file(folder);
+	tmp = *folder;
+	while (tmp)
+	{
+		if (tmp->type == 4)
+			ft_sort_settings(&tmp->files);
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
 int			ft_swap_file(t_file **file, t_file *current, t_file *head)
 {
 	if (current->prev)
@@ -50,81 +119,5 @@ int			ft_swap_file(t_file **file, t_file *current, t_file *head)
 	current->next = head;
 	if (head == (*file))
 		(*file) = current;
-	return (1);
-}
-
-int			ft_sort_by_last_modify(t_file **file)
-{
-	t_file	*current;
-	t_file	*tmp;
-
-	current = (*file);
-	tmp = (*file);
-	while (current->next)
-	{
-		if (current->sb->st_atime > current->next->sb->st_atime)
-		{
-			current = current->next;
-			while (tmp->next)
-			{
-				if (current->sb->st_atime < tmp->sb->st_atime)
-					return (ft_swap_file(file, current, tmp) && ft_sort_lexico(file));
-				tmp = tmp->next;
-			}
-		}
-		current = current->next;
-	}
-	return (1);
-}
-
-int			ft_rev_list(t_file **file)
-{
-	while ((*file)->prev)
-	{
-		(*file) = (*file)->prev;
-	}
-	return (1);
-}
-
-int			ft_rev_file(t_file *file)
-{
-	t_file	*prev;
-	t_file	*tmp;
-
-	prev = NULL;
-	while (file)
-	{
-		tmp = file;
-		file = file->next;
-		tmp->next = prev;
-		prev = tmp;
-	}
-	file = tmp;
-	return (0);
-}
-
-int			ft_sort_settings(t_file **folder)
-{
-	t_file	*tmp;
-
-	if (!folder || !(tmp = *folder))
-		return (0);
-
-	if (ft_indexof(g_flags, 'f') < 0)
-	{
-		if (ft_indexof(g_flags, 'u') >= 0)
-			ft_sort_by_last_modify(folder);
-		else
-			ft_sort_lexico(folder);
-	}
-	if (ft_indexof(g_flags, 'R') >= 0)
-	{
-		while (tmp)
-		{
-			if (tmp->type == 4)
-				ft_sort_settings(&tmp->files);
-			tmp = tmp->next;
-		}
-	}
 	return (1);
 }
