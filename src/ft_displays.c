@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../ft_ls.h"
+#include "ft_ls.h"
 
 int			ft_display_recursive(t_file *file, int l_len[], int is_multi,
 	int first)
@@ -42,7 +42,7 @@ int			ft_display_recursive(t_file *file, int l_len[], int is_multi,
 	return (1);
 }
 
-int			ft_display_result(t_file *file, int l_len[],  int i, int is_multi)
+int			ft_display_result(t_file *file, int l_len[], int i, int is_multi)
 {
 	t_file	*tmp;
 
@@ -50,7 +50,7 @@ int			ft_display_result(t_file *file, int l_len[],  int i, int is_multi)
 		return (0);
 	if (ft_indexof(g_flags, 'R') < 0)
 	{
-		i = ft_display_folder_files(tmp, l_len);
+		i = ft_display_folder_files(tmp);
 		while (tmp)
 		{
 			if (tmp->type == 4)
@@ -100,7 +100,7 @@ int			ft_display_folder(t_file *file, int l_len[])
 	return (1);
 }
 
-int			ft_display_folder_files(t_file *folder, int l_len[])
+int			ft_display_folder_files(t_file *folder)
 {
 	t_file	*tmp;
 	int		i;

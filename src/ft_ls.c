@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../ft_ls.h"
+#include "global_flags.h"
+#include "ft_ls.h"
 
 int					ft_parse_dir_last_part(t_file *current, struct dirent *tmp,
 	int l_len[])
@@ -105,9 +106,8 @@ int					main(int ac, char **av)
 	container = ft_init_folder("master", NULL, NULL);
 	if (ac < 1 || (i = ft_set_params(container, av, 0)) < -1)
 		return (0);
-	is_multi = av[i + 1] ? 1 : 0;
-	if (i > -1 && !av[i])
-		ac++;
+	is_multi = (av[i] && av[i + 1]) ? 1 : 0;
+	ac += (i > -1 && !av[i]) ? 1 : 0;
 	while (i > -1 && i < ac)
 	{
 		set_parse_params(container, av, l_len, i);

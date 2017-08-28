@@ -10,23 +10,41 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME =  ft_ls 
-HEADERS	= ft_ls.h
-SOURCES = src/ft_ls.c src/settings/ft_settings.c src/settings/ft_settings_2.c src/displays/ft_displays.c src/displays/ft_displays_2.c src/sortings/ft_sorts.c
-OBJ	= $(SOURCES:.c=.o)
-FLAGS	= -Wall -Werror -Wextra
+NAME    	=   ft_ls
+CC      	=   gcc
+RM      	=   rm -f
+CFLAGS  	=  -Wall -Werror -Wextra
+LIB			=	-L./lib/libft -lft
+CPPFLAGS	= 	-Iincludes
+SRCS		=	src/ft_settings.c \
+				src/ft_settings_2.c \
+				src/ft_displays.c \
+				src/ft_displays_2.c \
+				src/ft_sorts.c \
+				src/ft_sorts2.c \
+				src/ft_ls.c
 
-all: 
-	gcc $(FLAGS) -c $(HEADERS) $(SOURCES)  
-	ar rc $(NAME) $(OBJ)
-	ranlib $(NAME) && chmod 755 $(NAME)
-	cd libft && make
-clean : 
-	rm -rf $(OBJ) 
-	cd lib/libft && make clean 
+OBJS    	=   $(SRCS:.c=.o)
 
-fclean : clean
-	rm -rf $(NAME)
-	cd lib/libft -rf $(NAME)
-re : fclean all
-	cd lib/libft fclean all
+all:        $(NAME)
+
+$(NAME):    $(OBJS)
+			Make -C ./lib/libft
+			$(CC) -o $(NAME) $(OBJS) $(LIB) $(CPPFLAGS)
+clean:
+			$(RM) $(OBJS)
+			Make -C ./lib/libft fclean
+
+fclean:		clean
+			$(RM) $(NAME)
+
+re:			fclean all
+
+push:
+			@git add .
+			@echo "Enter Your Commit :"
+			@read var1 ; git commit -m "$$var1"
+			@echo "Enter The origin :"
+			@read var2 ; git push origin "$$var2"
+
+.PHONY:		all clean fclean re push

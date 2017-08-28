@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../ft_ls.h"
+#include "ft_ls.h"
 
 t_file			*ft_init_folder(char *name, t_file *parent, t_file *prev)
 {
@@ -55,7 +55,7 @@ char			*ft_padding(char *s, int offset, char direction)
 	return (tmp);
 }
 
-int				ft_push_file(t_file *head, t_file *file)
+static int		ft_push_file(t_file *head, t_file *file)
 {
 	t_file		*tmp;
 
@@ -95,30 +95,30 @@ int				ft_set_error(t_file *file, char *s, char *err)
 	return ((file->type = -1));
 }
 
-int				ft_set_time(t_file *file)
+int				ft_set_params(t_file *file, char **av, int i)
 {
-	char		**r;
-	char		**tmp;
-	time_t		curtime;
+	int			j;
+	int			k;
+	char		r[ft_strlen(g_flags)];
 
-	if (!(r = (char **)malloc(sizeof(char *) * 100)) ||
-	!(*r = ctime(&file->sb->st_mtime)))
-		return (0);
-	r = ft_strsplit(*r, ' ');
-	file->l[5] = r[1];
-	file->l[5] = ft_strjoin(file->l[5], " ");
-	file->l[5] = ft_strjoin(file->l[5],
-		ft_padding(r[2], (ft_strlen(r[2]) > 1 ? 0 : 1), 'r'));
-	file->l[5] = ft_strjoin(file->l[5], " ");
-	tmp = r;
-	if ((time(&curtime) - 15552000) > file->sb->st_mtime)
-		file->l[5] = ft_strjoin(file->l[5], ft_padding(tmp[4], 1, 'r'));
-	else
+	j = 0;
+	k = -1;
+	ft_memset(r, '\0', ft_strlen(g_flags));
+	while (av[++i] && av[i][0] == '-' && av[i][1])
 	{
-		r = ft_strsplit(r[3], ':');
-		file->l[5] = ft_strjoin(file->l[5], r[0]);
-		file->l[5] = ft_strjoin(file->l[5], ":");
-		file->l[5] = ft_strjoin(file->l[5], r[1]);
+		while (av[i][++j] != '\0')
+		{
+			if (ft_indexof(g_flags, av[i][j]) < 0)
+			{
+				ft_set_error(file, ft_strsub(av[i], j, 1), "wrong flag");
+				return (-1);
+			}
+			if (ft_indexof(g_flags, av[i][j]) >= 0)
+				if (ft_indexof(r, av[i][j]) < 0)
+					r[++k] = av[i][j];
+		}
+		j = 0;
 	}
-	return (1);
+	g_flags = ft_strdup(r);
+	return (i);
 }

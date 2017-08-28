@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../ft_ls.h"
+#include "ft_ls.h"
 
 int			ft_rev_file(t_file **file)
 {
@@ -87,13 +87,10 @@ int			ft_sort_settings(t_file **folder)
 
 	if (!folder || !(*folder))
 		return (0);
-	if (ft_indexof(g_flags, 'f') < 0)
-	{
-		if (ft_indexof(g_flags, 'u') >= 0)
-			ft_sort_by_last_modify(folder);
-		else
-			ft_sort_lexico(folder);
-	}
+	if (ft_indexof(g_flags, 'u') >= 0)
+		ft_sort_by_last_modify(folder);
+	else
+		ft_sort_lexico(folder);
 	if (ft_indexof(g_flags, 'r') >= 0)
 		ft_rev_file(folder);
 	tmp = *folder;

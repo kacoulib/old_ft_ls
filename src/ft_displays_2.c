@@ -10,24 +10,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../ft_ls.h"
+#include "ft_ls.h"
 
 int			ft_display_color(t_file *file)
 {
-	if (file->type == 12 && file->l[0][10] == ' ')
-		ft_putstr(setColor ? ANSI_COLOR_BLACK : "");
+	if (file->type == 12 && file->l[0] && file->l[0][10] == ' ')
+		ft_putstr(SETCOLOR ? ANSI_COLOR_BLACK : "");
 	else if (file->type == 0)
-		ft_putstr(setColor ? ANSI_COLOR_RED : "");
+		ft_putstr(SETCOLOR ? ANSI_COLOR_RED : "");
 	else if (file->type == 4)
-		ft_putstr(setColor ? ANSI_COLOR_CYAN : "");
+		ft_putstr(SETCOLOR ? ANSI_COLOR_CYAN : "");
 	else if (file->type == 10)
 	{
-		ft_putstr(setColor ? ANSI_COLOR_MAGENTA : "");
+		ft_putstr(SETCOLOR ? ANSI_COLOR_MAGENTA : "");
 		if (ft_indexof(g_flags, 'l') > -1 && ft_display_color_extra(file))
 			return (1);
 	}
 	ft_putstr(file->name);
-	ft_putendl(setColor ? ANSI_COLOR_RESET : "");
+	ft_putendl(SETCOLOR ? ANSI_COLOR_RESET : "");
 	return (1);
 }
 
@@ -37,10 +37,10 @@ int			ft_display_color_extra(t_file *file)
 
 	r = ft_strsplit(file->name, ' ');
 	ft_putstr(r[0]);
-	ft_putstr(setColor ? ANSI_COLOR_RESET : "");
+	ft_putstr(SETCOLOR ? ANSI_COLOR_RESET : "");
 	ft_putstr(" -> ");
 	ft_putstr(r[1]);
-	ft_putendl(setColor ? ANSI_COLOR_RESET : "");
+	ft_putendl(SETCOLOR ? ANSI_COLOR_RESET : "");
 	return (1);
 }
 

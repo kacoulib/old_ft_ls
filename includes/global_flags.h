@@ -1,20 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_sorts2.c                                        :+:      :+:    :+:   */
+/*   global_flags.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kacoulib <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/02 17:56:36 by kacoulib          #+#    #+#             */
-/*   Updated: 2017/04/02 17:56:40 by kacoulib         ###   ########.fr       */
+/*   Created: 2017/08/28 17:24:53 by kacoulib          #+#    #+#             */
+/*   Updated: 2017/08/28 17:24:56 by kacoulib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../ft_ls.h"
+#ifndef GLOBAL_FLAGS_H
+# define GLOBAL_FLAGS_H
 
-int			ft_rev_list(t_file **file)
-{
-	while ((*file)->prev)
-		(*file) = (*file)->prev;
-	return (1);
-}
+char *g_flags = "alRrtu";
+
+#endif
