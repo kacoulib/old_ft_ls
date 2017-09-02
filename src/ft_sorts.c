@@ -38,15 +38,15 @@ int			ft_sort_by_last_modify(t_file **file)
 	tmp = (*file);
 	while (current->next)
 	{
-		if (current->sb->st_atime > current->next->sb->st_atime)
+		if (current->sb->st_mtime < current->next->sb->st_mtime)
 		{
 			current = current->next;
 			while (tmp->next)
 			{
-				if (current->sb->st_atime < tmp->sb->st_atime)
+				if (current->sb->st_mtime > tmp->sb->st_mtime)
 				{
 					ft_swap_file(file, current, tmp);
-					return (ft_sort_lexico(file));
+					return (ft_sort_by_last_modify(file));
 				}
 				tmp = tmp->next;
 			}

@@ -13,10 +13,17 @@
 #include "global_flags.h"
 #include "ft_ls.h"
 
-int					ft_parse_dir_last_part(t_file *current, struct dirent *tmp,
+static int			ft_parse_dir_last_part(t_file *current, struct dirent *tmp,
 	int l_len[])
 {
-	current->path = ft_freejoin(current->path, current->name);
+	if (current->parent->path[ft_strlen(current->parent->path) - 1] != '/')
+		current->path = ft_strjoin(current->parent->path, "/");
+	else
+		current->path = current->parent->path;
+	current->path = ft_strjoin(current->path, current->name);
+	if (stat(current->path, current->sb) == -1 &&
+		lstat(current->path, current->sb) == -1)
+		return (0);
 	if (tmp)
 		current->type = tmp->d_type;
 	if (ft_indexof(g_flags, 'l') > -1)
@@ -36,7 +43,7 @@ int					ft_parse_dir(t_file *file, t_file *current,
 {
 	DIR				*dir;
 
-	if ((dir = opendir(file->path ? file->path : file->name)))
+	if ((dir = opendir(file->path)))
 	{
 		file->type = 4;
 		file->path = (file->path) ? file->path : file->name;
@@ -50,7 +57,6 @@ int					ft_parse_dir(t_file *file, t_file *current,
 				else if ((current->next =
 					ft_init_folder(tmp->d_name, file, current)))
 					current = current->next;
-				current->path = ft_strjoin(file->path, "/");
 				ft_parse_dir_last_part(current, tmp, l_len);
 			}
 		}
@@ -71,6 +77,9 @@ int					set_parse_params(t_file *container, char **av,
 	folder->name = ft_strdup((!av[i]) ? "." : av[i]);
 	if (opendir(folder->name) == NULL && !ft_is_file(folder->name))
 		return (ft_set_error(folder, ft_strjoin(folder->name, ": "), "open"));
+	i = ft_strlen(folder->name);
+	if (folder->name[i] != '/')
+		folder->path = ft_strjoin(folder->name, "/");
 	i = 0;
 	if ((i = ft_parse_dir(folder, NULL, l_len, NULL)))
 	{
@@ -90,7 +99,7 @@ int					main(int ac, char **av)
 {
 	int				i;
 	int				is_multi;
-	int				l_len[8];
+	int				l_len[7];
 	t_file			*container;
 
 	i = 0;

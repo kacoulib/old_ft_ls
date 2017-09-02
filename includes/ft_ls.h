@@ -31,7 +31,7 @@ typedef struct		s_file
 	char			*name;
 	char			*path;
 	char			*info;
-	char			*l[8];
+	char			*l[7];
 	int				size;
 	int				type;
 	struct stat		*sb;
@@ -41,15 +41,6 @@ typedef struct		s_file
 	struct s_file	*next;
 	struct s_file	*prev;
 }					t_file;
-
-typedef struct		s_file_master
-{
-	int				is_multi;
-	int				l_len[8];
-	struct s_file	*files;
-	struct s_file	*errors;
-}					t_file_master;
-
 
 extern char *g_flags;
 
@@ -64,8 +55,6 @@ t_file				*ft_init_folder(char *name, t_file *parent, t_file *prev);
 char				*ft_padding(char *s, int offset, char direction);
 int					ft_parse_dir(t_file *file, t_file *current, int l_len[],
 	struct dirent *tmp);
-int					ft_parse_dir_last_part(t_file *file, struct dirent *tmp,
-	int l_len[]);
 int					ft_rev_file(t_file **file);
 int					ft_rev_list(t_file **file);
 int					ft_set_error(t_file *file, char *s, char *type);

@@ -75,17 +75,17 @@ int				ft_set_error(t_file *file, char *s, char *err)
 		return (0);
 	file->name = ft_strdup("ft_ls: ");
 	if (ft_strcmp(err, "open") == 0)
-		file->name = ft_freejoin(file->name, s);
+		file->name = ft_strjoin(file->name, s);
 	if (ft_strcmp(err, "wrong flag") == 0)
 	{
-		file->name = ft_freejoin(file->name, "illegal option -- ");
-		file->name = ft_freejoin(file->name, s);
-		file->name = ft_freejoin(file->name, "\nusage: ft_ls [");
-		file->name = ft_freejoin(file->name, g_flags);
-		file->name = ft_freejoin(file->name, "] [file ...]");
+		file->name = ft_strjoin(file->name, "illegal option -- ");
+		file->name = ft_strjoin(file->name, s);
+		file->name = ft_strjoin(file->name, "\nusage: ft_ls [");
+		file->name = ft_strjoin(file->name, g_flags);
+		file->name = ft_strjoin(file->name, "] [file ...]");
 	}
 	else
-		file->name = ft_freejoin(file->name, sys_errlist[errno]);
+		file->name = ft_strjoin(file->name, sys_errlist[errno]);
 	while (tmp->parent)
 		tmp = tmp->parent;
 	if (!tmp->errors)

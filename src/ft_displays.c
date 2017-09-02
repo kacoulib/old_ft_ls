@@ -127,7 +127,7 @@ int			ft_display_color(t_file *file)
 	}
 	else if ((file->sb->st_mode & S_IWOTH))
 		ft_putfile(file->name, 32, NULL);
-	else if ((file->sb->st_mode & S_IWOTH) && file->type != 4)
+	else if ((file->sb->st_mode & S_IXOTH) && file->type != 4)
 		ft_putfile(file->name, 16, NULL);
 	else
 		ft_putfile(file->name, file->type, NULL);
