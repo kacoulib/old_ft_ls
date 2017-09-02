@@ -16,11 +16,14 @@
 static int			ft_parse_dir_last_part(t_file *current, struct dirent *tmp,
 	int l_len[])
 {
-	if (current->parent->path[ft_strlen(current->parent->path) - 1] != '/')
-		current->path = ft_strjoin(current->parent->path, "/");
-	else
-		current->path = current->parent->path;
-	current->path = ft_strjoin(current->path, current->name);
+	if (tmp)
+	{		
+		if (current->path[ft_strlen(current->path) - 1] != '/')
+			current->path = ft_strjoin(current->path, "/");
+		else
+			current->path = current->path;
+		current->path = ft_strjoin(current->path, current->name);
+	}
 	if (stat(current->path, current->sb) == -1 &&
 		lstat(current->path, current->sb) == -1)
 		return (0);
@@ -57,13 +60,14 @@ int					ft_parse_dir(t_file *file, t_file *current,
 				else if ((current->next =
 					ft_init_folder(tmp->d_name, file, current)))
 					current = current->next;
+				current->path = file->path;
 				ft_parse_dir_last_part(current, tmp, l_len);
 			}
 		}
 		closedir(dir);
 	}
 	else if (ft_is_file(file->name) && (file->path = file->name))
-		return (ft_parse_dir_last_part(file, tmp, l_len));
+		return (ft_parse_dir_last_part(file, NULL, l_len));
 	return (1);
 }
 

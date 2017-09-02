@@ -19,8 +19,6 @@
 # include <sys/stat.h>
 # include <sys/types.h>
 
-
-
 typedef struct		s_list
 {
 	void			*content;
@@ -96,7 +94,6 @@ int					ft_is_file(char *path);
 int					ft_putfile(char *str, int type, char *link);
 int					ft_print(char *s1, char *s2, char *s3, char *s4);
 char				*ft_freejoin(char *s1, char const *s2);
-
 
 # define SETCOLOR 0
 # define ANSI_COLOR_BLACK	"\x1B[30m\x1B[42m"
