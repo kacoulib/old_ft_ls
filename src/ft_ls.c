@@ -16,7 +16,7 @@
 int					ft_parse_dir_last_part(t_file *current, struct dirent *tmp,
 	int l_len[])
 {
-	current->path = ft_strjoin(current->path, current->name);
+	current->path = ft_freejoin(current->path, current->name);
 	if (tmp)
 		current->type = tmp->d_type;
 	if (ft_indexof(g_flags, 'l') > -1)
@@ -29,14 +29,6 @@ int					ft_parse_dir_last_part(t_file *current, struct dirent *tmp,
 				return (0);
 	}
 	return (1);
-}
-
-int					ft_is_file(char *path)
-{
-	struct stat		path_stat;
-
-	stat(path, &path_stat);
-	return (S_ISREG(path_stat.st_mode));
 }
 
 int					ft_parse_dir(t_file *file, t_file *current,

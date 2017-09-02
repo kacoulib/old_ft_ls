@@ -23,19 +23,19 @@ static int		ft_set_time(t_file *file)
 		return (0);
 	r = ft_strsplit(*r, ' ');
 	file->l[5] = r[1];
-	file->l[5] = ft_strjoin(file->l[5], " ");
-	file->l[5] = ft_strjoin(file->l[5],
+	file->l[5] = ft_freejoin(file->l[5], " ");
+	file->l[5] = ft_freejoin(file->l[5],
 		ft_padding(r[2], (ft_strlen(r[2]) > 1 ? 0 : 1), 'r'));
-	file->l[5] = ft_strjoin(file->l[5], " ");
+	file->l[5] = ft_freejoin(file->l[5], " ");
 	tmp = r;
 	if ((time(&curtime) - 15552000) > file->sb->st_mtime)
-		file->l[5] = ft_strjoin(file->l[5], ft_padding(tmp[4], 1, 'r'));
+		file->l[5] = ft_freejoin(file->l[5], ft_padding(tmp[4], 1, 'r'));
 	else
 	{
 		r = ft_strsplit(r[3], ':');
-		file->l[5] = ft_strjoin(file->l[5], r[0]);
-		file->l[5] = ft_strjoin(file->l[5], ":");
-		file->l[5] = ft_strjoin(file->l[5], r[1]);
+		file->l[5] = ft_freejoin(file->l[5], r[0]);
+		file->l[5] = ft_freejoin(file->l[5], ":");
+		file->l[5] = ft_freejoin(file->l[5], r[1]);
 	}
 	free(r);
 	return (1);
@@ -82,18 +82,18 @@ static int		ft_set_acl(t_file *file)
 		file->l[0] = ft_strjoin(file->l[0],
 			mode & (S_IXUSR | S_IXGRP) ? "x" : "-");
 	else if (mode & S_ISVTX)
-		file->l[0] = ft_strjoin(file->l[0], mode & S_IXGRP ? "t" : "T");
+		file->l[0] = ft_freejoin(file->l[0], mode & S_IXGRP ? "t" : "T");
 	else
-		file->l[0] = ft_strjoin(file->l[0], (mode & S_IXOTH) ? "x" : "-");
+		file->l[0] = ft_freejoin(file->l[0], (mode & S_IXOTH) ? "x" : "-");
 	facl = acl_get_link_np(file->path, ACL_TYPE_EXTENDED);
 	if (facl && (acl_get_entry(facl, ACL_FIRST_ENTRY, &ae) == -1))
-		file->l[0] = ft_strjoin(file->l[0], " ");
+		file->l[0] = ft_freejoin(file->l[0], " ");
 	else if (listxattr(file->path, NULL, 5, XATTR_NOFOLLOW) > 0)
-		file->l[0] = ft_strjoin(file->l[0], "@");
+		file->l[0] = ft_freejoin(file->l[0], "@");
 	else if (facl != NULL)
-		file->l[0] = ft_strjoin(file->l[0], "+");
+		file->l[0] = ft_freejoin(file->l[0], "+");
 	else
-		file->l[0] = ft_strjoin(file->l[0], " ");
+		file->l[0] = ft_freejoin(file->l[0], " ");
 	free(r);
 	return (1);
 }
@@ -115,14 +115,14 @@ static int		ft_set_permissions(t_file *file, int l_len[],
 		file->l[0] = ft_strdup("s");
 	else
 		file->l[0] = ft_strdup("-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IRUSR) ? "r" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IWUSR) ? "w" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IXUSR) ? "x" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IRGRP) ? "r" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IWGRP) ? "w" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IXGRP) ? "x" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IROTH) ? "r" : "-");
-	file->l[0] = ft_strjoin(file->l[0], (mode & S_IWOTH) ? "w" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IRUSR) ? "r" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IWUSR) ? "w" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IXUSR) ? "x" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IRGRP) ? "r" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IWGRP) ? "w" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IXGRP) ? "x" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IROTH) ? "r" : "-");
+	file->l[0] = ft_freejoin(file->l[0], (mode & S_IWOTH) ? "w" : "-");
 	if (ft_set_acl(file) && (int)ft_strlen(file->l[0]) > l_len[0])
 		l_len[0] = ft_strlen(file->l[0]);
 	return (ft_set_user_name(file, l_len, NULL, NULL));
@@ -140,9 +140,10 @@ int				ft_set_extra_info(t_file *file, int long_params[])
 	file->sb = sb;
 	if (file->type == 10)
 	{
+		ft_bzero(tmp, 256);
 		readlink(file->path, tmp, 256);
-		file->name = ft_strjoin(file->name, " ");
-		file->name = ft_strjoin(file->name, tmp);
+		file->name = ft_freejoin(file->name, " ");
+		file->name = ft_freejoin(file->name, tmp);
 	}
 	if (file->parent)
 		file->parent->size += sb->st_blocks;

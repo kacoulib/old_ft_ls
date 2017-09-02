@@ -19,7 +19,6 @@ CPPFLAGS	= 	-Iincludes
 SRCS		=	src/ft_settings.c \
 				src/ft_settings_2.c \
 				src/ft_displays.c \
-				src/ft_displays_2.c \
 				src/ft_sorts.c \
 				src/ft_sorts2.c \
 				src/ft_ls.c

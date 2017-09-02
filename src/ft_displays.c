@@ -60,7 +60,7 @@ int			ft_display_result(t_file *file, int l_len[], int i, int is_multi)
 				if (is_multi)
 					ft_print(tmp->path, ":", NULL, NULL);
 				if (ft_indexof(g_flags, 'l') > -1)
-					ft_print("total ", ft_itoa(file->size), NULL, NULL);
+					ft_print("total ", ft_itoa(tmp->size), NULL, NULL);
 				ft_display_folder(tmp->files, l_len);
 			}
 			tmp = tmp->next;
@@ -109,9 +109,28 @@ int			ft_display_folder_files(t_file *folder)
 	i = 0;
 	while (tmp)
 	{
-		if (tmp->type == 8 && ++i)
+		if (tmp->type != 4 && ++i)
 			ft_display_color(tmp);
 		tmp = tmp->next;
 	}
 	return (i);
+}
+
+int			ft_display_color(t_file *file)
+{
+	char	**tmp;
+
+	if (file->type == 10)
+	{
+		tmp = ft_strsplit(file->name, ' ');
+		ft_putfile(tmp[0], file->type, tmp[1]);
+	}
+	else if ((file->sb->st_mode & S_IWOTH))
+		ft_putfile(file->name, 32, NULL);
+	else if ((file->sb->st_mode & S_IWOTH) && file->type != 4)
+		ft_putfile(file->name, 16, NULL);
+	else
+		ft_putfile(file->name, file->type, NULL);
+	ft_putchar('\n');
+	return (1);
 }
