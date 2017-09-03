@@ -12,31 +12,44 @@
 
 #include "ft_ls.h"
 
+int			ft_display_errors(t_file *file)
+{
+	if (!file || !file->errors)
+		return (1);
+	ft_sort_lexico(&file->errors);
+	while (file->errors)
+	{
+		ft_putendl(file->errors->name);
+		file->errors = file->errors->next;
+	}
+	return (1);
+}
+
 int			ft_display_recursive(t_file *file, int l_len[], int is_multi,
 	int first)
 {
-	t_file	*tmp;
 	int		i;
+	t_file	*tmp;
 
 	if (!(tmp = file))
 		return (0);
-	i = 0;
+	i = -1;
 	while (tmp)
 	{
-		if (tmp->type == 4)
+		if (++i > -1 && tmp->type == 4)
 		{
 			if ((ft_strcmp(tmp->name, ".") != 0 && ft_strcmp(tmp->name, "..")
 				!= 0) || (first))
 			{
 				if (is_multi)
 					ft_print(first && i == 0 ? "" : "\n", tmp->path, ":", NULL);
-				if (ft_indexof(g_flags, 'l') > -1 && !first && file->files)
-					ft_print("total ", ft_itoa(file->size), NULL, NULL);
+				if (ft_indexof(g_flags, 'l') > -1 && tmp->files)
+					ft_print("total ", ft_itoa(tmp->size), NULL, NULL);
 				ft_display_folder(tmp->files, l_len);
 			}
+			ft_display_errors(tmp);
 			ft_display_recursive(tmp->files, l_len, 1, 0);
 		}
-		i++;
 		tmp = tmp->next;
 	}
 	return (1);
@@ -48,9 +61,9 @@ int			ft_display_result(t_file *file, int l_len[], int i, int is_multi)
 
 	if (!(tmp = file))
 		return (0);
+	i = ft_display_folder_files(tmp, l_len);
 	if (ft_indexof(g_flags, 'R') < 0)
 	{
-		i = ft_display_folder_files(tmp);
 		while (tmp)
 		{
 			if (tmp->type == 4)
@@ -68,69 +81,5 @@ int			ft_display_result(t_file *file, int l_len[], int i, int is_multi)
 	}
 	else
 		ft_display_recursive(file, l_len, is_multi, 1);
-	return (1);
-}
-
-int			ft_display_folder(t_file *file, int l_len[])
-{
-	char	*tmp;
-	int		i;
-
-	while (file)
-	{
-		if (ft_indexof(g_flags, 'l') > -1 && file->type != -1)
-		{
-			i = -1;
-			while (file->l[++i] && l_len[i])
-			{
-				if (i == 4)
-					tmp = ft_padding(file->l[i],
-						(l_len[i] - ft_strlen(file->l[i])) + 1, 'r');
-				else
-					tmp = ft_padding(file->l[i],
-						(l_len[i] - ft_strlen(file->l[i])) + 1, 'l');
-				ft_putstr(ft_strjoin(tmp, " "));
-			}
-			ft_display_color(file);
-		}
-		else
-			ft_display_color(file);
-		file = file->next;
-	}
-	return (1);
-}
-
-int			ft_display_folder_files(t_file *folder)
-{
-	t_file	*tmp;
-	int		i;
-
-	tmp = folder;
-	i = 0;
-	while (tmp)
-	{
-		if (tmp->type != 4 && ++i)
-			ft_display_color(tmp);
-		tmp = tmp->next;
-	}
-	return (i);
-}
-
-int			ft_display_color(t_file *file)
-{
-	char	**tmp;
-
-	if (file->type == 10)
-	{
-		tmp = ft_strsplit(file->name, ' ');
-		ft_putfile(tmp[0], file->type, tmp[1]);
-	}
-	else if ((file->sb->st_mode & S_IWOTH))
-		ft_putfile(file->name, 32, NULL);
-	else if ((file->sb->st_mode & S_IXOTH) && file->type != 4)
-		ft_putfile(file->name, 16, NULL);
-	else
-		ft_putfile(file->name, file->type, NULL);
-	ft_putchar('\n');
 	return (1);
 }

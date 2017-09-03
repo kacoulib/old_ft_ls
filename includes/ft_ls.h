@@ -13,7 +13,7 @@
 #ifndef FT_LS_H
 # define FT_LS_H
 
-# include "libft.h"
+# include "../lib/libft/libft.h"
 # include <dirent.h>
 # include <sys/types.h>
 # include <sys/stat.h>
@@ -46,7 +46,7 @@ extern char *g_flags;
 
 int					ft_display_color(t_file *file);
 int					ft_display_folder(t_file *folder, int l_len[]);
-int					ft_display_folder_files(t_file *folder);
+int					ft_display_folder_files(t_file *folder, int l_len[]);
 int					ft_display_recursive(t_file *file, int l_len[],
 	int is_multiple_folder, int is_first);
 int					ft_display_result(t_file *file, int l_len[],
@@ -66,5 +66,8 @@ int					ft_sort_by_last_modify(t_file **file);
 int					ft_sort_lexico(t_file **file);
 int					ft_swap_file(t_file **file, t_file *current,
 	t_file *tmp);
+int					ft_push_file(t_file *head, t_file *file);
+int					ft_display_errors(t_file *file);
 
+int					ft_display_single(t_file *folder, int l_len[]);
 #endif

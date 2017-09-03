@@ -13,24 +13,30 @@
 #include "global_flags.h"
 #include "ft_ls.h"
 
+static int			ft_set_sb_and_long(t_file *file, int l_len[])
+{
+	if (stat(file->path, file->sb) == -1 &&
+		lstat(file->path, file->sb) == -1)
+		return (0);
+	if (ft_indexof(g_flags, 'l') > -1)
+		ft_set_extra_info(file, l_len);
+	return (1);
+}
+
 static int			ft_parse_dir_last_part(t_file *current, struct dirent *tmp,
 	int l_len[])
 {
 	if (tmp)
-	{		
+	{
 		if (current->path[ft_strlen(current->path) - 1] != '/')
 			current->path = ft_strjoin(current->path, "/");
 		else
 			current->path = current->path;
 		current->path = ft_strjoin(current->path, current->name);
 	}
-	if (stat(current->path, current->sb) == -1 &&
-		lstat(current->path, current->sb) == -1)
-		return (0);
 	if (tmp)
 		current->type = tmp->d_type;
-	if (ft_indexof(g_flags, 'l') > -1)
-		ft_set_extra_info(current, l_len);
+	ft_set_sb_and_long(current, l_len);
 	if (tmp && tmp->d_type == 4 && ft_indexof(g_flags, 'R') >= 0)
 	{
 		if (ft_strcmp(tmp->d_name, ".") != 0 &&
@@ -48,8 +54,8 @@ int					ft_parse_dir(t_file *file, t_file *current,
 
 	if ((dir = opendir(file->path)))
 	{
-		file->type = 4;
 		file->path = (file->path) ? file->path : file->name;
+		file->type = 4;
 		while ((tmp = readdir(dir)))
 		{
 			if (tmp->d_name[0] != '.' || (ft_indexof(g_flags, 'a') >= 0))
@@ -66,37 +72,33 @@ int					ft_parse_dir(t_file *file, t_file *current,
 		}
 		closedir(dir);
 	}
-	else if (ft_is_file(file->name) && (file->path = file->name))
-		return (ft_parse_dir_last_part(file, NULL, l_len));
-	return (1);
+	return (!dir ? ft_set_error(file, file->name, NULL) : 1);
 }
 
-int					set_parse_params(t_file *container, char **av,
+int					set_parse_params(t_file *master, char **av,
 	int l_len[], int i)
 {
-	t_file			*folder;
+	t_file			*tmp;
 
-	if (!(folder = ft_init_folder(NULL, container, NULL)))
-		return (ft_set_error(container, "error initialize folder", 0));
-	folder->name = ft_strdup((!av[i]) ? "." : av[i]);
-	if (opendir(folder->name) == NULL && !ft_is_file(folder->name))
-		return (ft_set_error(folder, ft_strjoin(folder->name, ": "), "open"));
-	i = ft_strlen(folder->name);
-	if (folder->name[i] != '/')
-		folder->path = ft_strjoin(folder->name, "/");
-	i = 0;
-	if ((i = ft_parse_dir(folder, NULL, l_len, NULL)))
+	if (!(tmp = ft_init_folder((!av[i]) ? "." : av[i], master, NULL)))
+		return (ft_set_error(master, "error initialize folder", 0));
+	if (!ft_is_dir(tmp->name) && !ft_is_file(tmp->name))
+		return (ft_set_error(master, ft_strjoin(tmp->name, ": "), "open"));
+	i = ft_strlen(tmp->name);
+	tmp->path = tmp->name;
+	if (ft_is_file(tmp->name) && (i = 1))
+		ft_set_sb_and_long(tmp, l_len);
+	else
 	{
-		if (!container->files)
-			container->files = folder;
-		else
-		{
-			folder->prev = container->files;
-			container->files->next = folder;
-			container->files = container->files->next;
-		}
+		if (tmp->name[i] != '/')
+			tmp->path = ft_strjoin(tmp->name, "/");
+		ft_parse_dir(tmp, NULL, l_len, NULL);
 	}
-	return (i);
+	if (!master->files)
+		master->files = tmp;
+	else
+		ft_push_file(master->files, tmp);
+	return (1);
 }
 
 int					main(int ac, char **av)
@@ -104,26 +106,26 @@ int					main(int ac, char **av)
 	int				i;
 	int				is_multi;
 	int				l_len[7];
-	t_file			*container;
+	t_file			*master;
 
 	i = 0;
 	is_multi = 0;
-	container = ft_init_folder("master", NULL, NULL);
-	if (ac < 1 || (i = ft_set_params(container, av, 0)) < -1)
+	master = ft_init_folder("master", NULL, NULL);
+	if (ac < 1 || (i = ft_set_params(master, av, 0)) < -1)
 		return (0);
 	is_multi = (av[i] && av[i + 1]) ? 1 : 0;
 	ac += (i > -1 && !av[i]) ? 1 : 0;
 	while (i > -1 && i < ac)
 	{
-		set_parse_params(container, av, l_len, i);
+		set_parse_params(master, av, l_len, i);
 		i++;
 	}
-	if (container->errors && ft_sort_lexico(&container->errors))
-		ft_display_folder(container->errors, l_len);
-	if (container->files && ft_rev_list(&container->files))
+	if (master->errors)
+		ft_display_errors(master);
+	if (master->files && ft_rev_list(&master->files))
 	{
-		ft_sort_settings(&container->files);
-		ft_display_result(container->files, l_len, i, is_multi);
+		ft_sort_settings(&master->files);
+		ft_display_result(master->files, l_len, i, is_multi);
 	}
 	return (0);
 }

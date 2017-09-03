@@ -16,11 +16,12 @@ RM      	=   rm -f
 CFLAGS  	=  -Wall -Werror -Wextra
 LIB			=	-L./lib/libft -lft
 CPPFLAGS	= 	-Iincludes
-SRCS		=	src/ft_settings.c \
-				src/ft_settings_2.c \
-				src/ft_displays.c \
-				src/ft_sorts.c \
-				src/ft_sorts2.c \
+SRCS		=	src/ft_setting_0.c \
+				src/ft_setting_1.c \
+				src/ft_display_0.c \
+				src/ft_display_1.c \
+				src/ft_sort_0.c \
+				src/ft_sort_1.c \
 				src/ft_ls.c
 
 OBJS    	=   $(SRCS:.c=.o)

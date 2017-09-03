@@ -55,11 +55,12 @@ char			*ft_padding(char *s, int offset, char direction)
 	return (tmp);
 }
 
-static int		ft_push_file(t_file *head, t_file *file)
+int				ft_push_file(t_file *head, t_file *file)
 {
 	t_file		*tmp;
 
-	tmp = head;
+	if (!(tmp = head))
+		return (0);
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = file;
@@ -67,32 +68,37 @@ static int		ft_push_file(t_file *head, t_file *file)
 	return (0);
 }
 
+/*
+**	@param [s] Is the name of the file name that is invalid or
+**				in which we don't have the permission
+*/
+
 int				ft_set_error(t_file *file, char *s, char *err)
 {
 	t_file		*tmp;
 
-	if (!(tmp = file))
+	if (!file || !(tmp = ft_init_folder("ft_ls: ", file, NULL)))
 		return (0);
-	file->name = ft_strdup("ft_ls: ");
-	if (ft_strcmp(err, "open") == 0)
-		file->name = ft_strjoin(file->name, s);
-	if (ft_strcmp(err, "wrong flag") == 0)
+	tmp->name = ft_strdup("ft_ls: ");
+	if (err && ft_strcmp(err, "wrong flag") == 0)
 	{
-		file->name = ft_strjoin(file->name, "illegal option -- ");
-		file->name = ft_strjoin(file->name, s);
-		file->name = ft_strjoin(file->name, "\nusage: ft_ls [");
-		file->name = ft_strjoin(file->name, g_flags);
-		file->name = ft_strjoin(file->name, "] [file ...]");
+		tmp->name = ft_strjoin(tmp->name, "illegal option -- ");
+		tmp->name = ft_strjoin(tmp->name, s);
+		tmp->name = ft_strjoin(tmp->name, "\nusage: ft_ls [");
+		tmp->name = ft_strjoin(tmp->name, g_flags);
+		tmp->name = ft_strjoin(tmp->name, "] [file ...]");
 	}
 	else
-		file->name = ft_strjoin(file->name, sys_errlist[errno]);
-	while (tmp->parent)
-		tmp = tmp->parent;
-	if (!tmp->errors)
-		tmp->errors = file;
+	{
+		tmp->name = ft_freejoin(tmp->name, s);
+		tmp->name = ft_freejoin(tmp->name, " : ");
+		tmp->name = ft_freejoin(tmp->name, (char *)sys_errlist[errno]);
+	}
+	if (file->errors)
+		ft_push_file(file->errors, tmp);
 	else
-		ft_push_file(tmp->errors, file);
-	return ((file->type = -1));
+		file->errors = tmp;
+	return ((tmp->type = -1));
 }
 
 int				ft_set_params(t_file *file, char **av, int i)
@@ -108,7 +114,7 @@ int				ft_set_params(t_file *file, char **av, int i)
 	{
 		while (av[i][++j] != '\0')
 		{
-			if (ft_indexof(g_flags, av[i][j]) < 0)
+			if (ft_indexof(g_flags, av[i][j]) < 0 || av[i][j] == '-')
 			{
 				ft_set_error(file, ft_strsub(av[i], j, 1), "wrong flag");
 				return (-1);
